@@ -14,29 +14,23 @@ Chưa làm: tự sửa code, tự merge, hỗ trợ GitLab.
 
 ## Cấu trúc thư mục
 
-```
 apps/
-  web/          Next.js: trang cho reviewer, API, và webhook GitHub (/api/webhooks/github)
-  runner/       tách claim, ghép evidence, chạy test/lint có giới hạn; chạy qua CI (.github/workflows/pr-evidence.yml), không qua webhook
+  web/          Next.js (App Router): trang reviewer, API, và webhook GitHub (/api/webhooks/github)
+  runner/       CLI chạy qua CI (.github/workflows/pr-evidence.yml): chạy test/lint sandbox, tách claim, ghép evidence, cập nhật DB & GitHub
+  github-app/   khung cũ đã gộp vào apps/web (xem docs/decisions/0001-stack.md)
 
 packages/
-  types/        kiểu dữ liệu dùng chung
+  types/        kiểu dữ liệu dùng chung (PullRequest, Claim, Evidence, AnalysisStatus, ...)
   claims/       tách claim từ mô tả PR và commit
-  ai-labels/    nhận diện commit/claim do AI viết
-  checks/       chạy lệnh có giới hạn thời gian/bộ nhớ output, đọc kết quả vitest/eslint
-  evidence/     ghép claim với đoạn diff (packages/evidence/src/diff.ts, match.ts), tổng hợp evidence, statusOf/summarize
-  db/           MongoDB: đọc/ghi pull_requests, giữ trạng thái duyệt khi phân tích lại
-packages/
-  claims/       tách claim từ mô tả PR và commit
-  evidence/     ghép claim với diff, test và lint
-  checks/       chạy lệnh test/lint trong sandbox
-  ai-labels/    nhận biết và gắn nhãn phần do AI viết
-  db/           schema và migration
-  types/        kiểu dữ liệu dùng chung giữa các app
-  config/       tsconfig và eslint dùng chung
+  ai-labels/    nhận diện commit/claim do AI viết, tính tỷ lệ % code AI
+  checks/       chạy lệnh test/lint có giới hạn thời gian/bộ nhớ, cô lập bằng Docker
+  evidence/     parse diff, ghép claim với code hunk qua token overlap, tổng hợp evidence
+  db/           MongoDB: đọc/ghi pull_requests, bảo toàn lịch sử duyệt khi phân tích lại
+  github-client/ tạo Check Run và đăng comment bảng claim-code-evidence lên GitHub
+  config/       cấu hình dùng chung
 evals/          bộ PR có đáp án chuẩn để đo giảm lỗi
-fixtures/       PR mẫu dùng cho test
-docs/           ghi chú và quyết định thiết kế (docs/decisions)
+fixtures/       PR mẫu dùng cho test (7 PR mẫu với các trạng thái done, queued, failed)
+docs/           ghi chú và quyết định thiết kế (docs/decisions: stack, auth, sandbox)
 scripts/        script chạy tay
 ```
 
@@ -52,7 +46,7 @@ Next.js (App Router) và TypeScript cho cả giao diện lẫn API. MongoDB làm
 cp .env.example .env
 docker compose up -d        # MongoDB ở localhost:27017
 pnpm install
-pnpm seed                   # nạp 5 PR mẫu từ fixtures/pull-requests
+pnpm seed                   # nạp 7 PR mẫu từ fixtures/pull-requests (đủ các trạng thái done, queued, failed)
 pnpm dev                    # http://localhost:3000
 pnpm test && pnpm typecheck
 ```

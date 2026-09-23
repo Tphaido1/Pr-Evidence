@@ -1,0 +1,62 @@
+{
+  "id": "acme/pr-evidence#45",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "updatedAt": "2026-09-22T06:00:00.000Z",
+  "number": 45,
+  "title": "Thêm nhãn AI cho diff",
+  "author": "minh",
+  "headBranch": "feature/ai-label",
+  "aiPercent": 90,
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Nhận biết đoạn diff do AI viết từ trailer commit",
+      "code": {
+        "file": "packages/ai-labels/src/detect.ts",
+        "lineStart": 3,
+        "lineEnd": 22,
+        "snippet": "/^Co-authored-by: .*(claude|copilot)/i"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "detect.test.ts · 5/5 qua"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    },
+    {
+      "id": "c2",
+      "text": "Nhãn hiện trong bảng của reviewer",
+      "code": {
+        "file": "apps/web/src/components/status-chip.tsx",
+        "lineStart": 1,
+        "lineEnd": 20,
+        "snippet": "<span className={styles.ai}>Có</span>"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "chip.test.tsx · 2/2 qua"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    },
+    {
+      "id": "c3",
+      "text": "PR không có trailer thì không gắn nhãn",
+      "code": {
+        "file": "packages/ai-labels/src/detect.ts",
+        "lineStart": 24,
+        "lineEnd": 30,
+        "snippet": "return false"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "detect.test.ts · 1/1 qua"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    }
+  ],
+  "analysisStatus": "done"
+}

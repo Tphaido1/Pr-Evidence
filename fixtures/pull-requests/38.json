@@ -1,0 +1,78 @@
+{
+  "id": "acme/pr-evidence#38",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "updatedAt": "2026-09-22T08:00:00.000Z",
+  "number": 38,
+  "title": "Sửa lỗi tách claim từ commit",
+  "author": "lan",
+  "headBranch": "fix/claim-split",
+  "aiPercent": 0,
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Commit nhiều dòng tách thành nhiều claim",
+      "code": {
+        "file": "packages/claims/src/split.ts",
+        "lineStart": 8,
+        "lineEnd": 27,
+        "snippet": "return message.split('\\n').filter(Boolean)"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "split.test.ts · 4/4 qua"
+      },
+      "aiWritten": false,
+      "review": "approved"
+    },
+    {
+      "id": "c2",
+      "text": "Bỏ qua dòng Co-authored-by",
+      "code": {
+        "file": "packages/claims/src/split.ts",
+        "lineStart": 29,
+        "lineEnd": 36,
+        "snippet": "if (line.startsWith('Co-authored-by')) continue"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "split.test.ts · 2/2 qua"
+      },
+      "aiWritten": false,
+      "review": "approved"
+    },
+    {
+      "id": "c3",
+      "text": "Không tạo claim rỗng",
+      "code": {
+        "file": "packages/claims/src/split.ts",
+        "lineStart": 38,
+        "lineEnd": 44,
+        "snippet": "if (!text.trim()) continue"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "split.test.ts · 1/1 qua"
+      },
+      "aiWritten": false,
+      "review": "approved"
+    },
+    {
+      "id": "c4",
+      "text": "Giữ nguyên thứ tự claim",
+      "code": {
+        "file": "packages/claims/src/split.ts",
+        "lineStart": 46,
+        "lineEnd": 52,
+        "snippet": "claims.sort((a, b) => a.index - b.index)"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "order.test.ts · 2/2 qua"
+      },
+      "aiWritten": false,
+      "review": "approved"
+    }
+  ],
+  "analysisStatus": "done"
+}

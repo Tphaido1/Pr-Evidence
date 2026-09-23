@@ -1,0 +1,13 @@
+.table { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.row { display: flex; align-items: center; gap: 16px; padding: 16px 20px; }
+.head { background: #fafafc; padding-block: 12px; font-size: 12px; font-weight: 500; color: var(--mute); }
+.body:hover { background: #fafbfc; }
+.title { flex: 1; min-width: 0; }
+.repo { width: 200px; }
+.author { width: 110px; }
+.evidence { width: 130px; }
+.ai { width: 110px; }
+.status { width: 120px; }
+.strong { font-weight: 600; }
+.muted { color: var(--mute); }
+.empty { padding: 32px 20px; color: var(--mute); }

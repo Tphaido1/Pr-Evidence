@@ -1,0 +1,35 @@
+name: pr-evidence
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: corepack enable && pnpm install --frozen-lockfile
+
+      # Chuyển payload webhook của GitHub Actions thành PR_META_PATH mà CLI cần.
+      - name: Tạo pr-meta.json
+        env:
+          PR_JSON: ${{ toJson(github.event.pull_request) }}
+        run: node .github/scripts/build-pr-meta.mjs
+
+      - name: Phân tích PR và lưu vào MongoDB
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DB: pr_evidence
+          PR_META_PATH: pr-meta.json
+          REPO_DIR: .
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: pnpm --filter @pr-evidence/runner process-pr

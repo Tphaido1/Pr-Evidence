@@ -1,0 +1,94 @@
+{
+  "id": "acme/pr-evidence#40",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "updatedAt": "2026-09-22T07:00:00.000Z",
+  "number": 40,
+  "title": "Đổi schema lưu evidence",
+  "author": "hung",
+  "headBranch": "refactor/evidence-shape",
+  "aiPercent": 75,
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Evidence lưu kèm loại kết quả",
+      "code": {
+        "file": "packages/types/src/index.ts",
+        "lineStart": 14,
+        "lineEnd": 20,
+        "snippet": "kind: EvidenceKind"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "types.test.ts · 2/2 qua"
+      },
+      "aiWritten": true,
+      "review": "approved"
+    },
+    {
+      "id": "c2",
+      "text": "Dữ liệu cũ vẫn đọc được",
+      "code": {
+        "file": "packages/db/src/pull-requests.ts",
+        "lineStart": 8,
+        "lineEnd": 12,
+        "snippet": "function fromDoc(doc) { ... }"
+      },
+      "evidence": {
+        "kind": "none",
+        "detail": "Chưa có test đọc dữ liệu cũ"
+      },
+      "aiWritten": true,
+      "review": "returned"
+    },
+    {
+      "id": "c3",
+      "text": "Thêm index theo repo",
+      "code": {
+        "file": "packages/db/src/client.ts",
+        "lineStart": 30,
+        "lineEnd": 34,
+        "snippet": "createIndex({ repo: 1 })"
+      },
+      "evidence": {
+        "kind": "none",
+        "detail": "Chưa có test"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    },
+    {
+      "id": "c4",
+      "text": "Giữ tương thích với API cũ",
+      "code": {
+        "file": "apps/web/src/app/api/pull-requests/route.ts",
+        "lineStart": 5,
+        "lineEnd": 20,
+        "snippet": "return Response.json(list)"
+      },
+      "evidence": {
+        "kind": "lint_only",
+        "detail": "Chỉ có lint"
+      },
+      "aiWritten": false,
+      "review": "pending"
+    },
+    {
+      "id": "c5",
+      "text": "Cập nhật fixtures",
+      "code": {
+        "file": "fixtures/pull-requests/42.json",
+        "lineStart": 1,
+        "lineEnd": 60,
+        "snippet": "{ \"kind\": \"test_pass\" }"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "fixtures.test.ts · 1/1 qua"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    }
+  ],
+  "analysisStatus": "done"
+}

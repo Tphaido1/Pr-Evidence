@@ -1,0 +1,2 @@
+.btn { font: inherit; font-size: 13px; color: var(--mute); background: none; border: none; cursor: pointer; padding: 8px 12px; text-align: left; }
+.btn:hover { color: var(--ink); }

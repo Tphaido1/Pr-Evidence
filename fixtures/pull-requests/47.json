@@ -1,0 +1,78 @@
+{
+  "id": "acme/pr-evidence#47",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "updatedAt": "2026-09-22T05:00:00.000Z",
+  "number": 47,
+  "title": "Cập nhật webhook handler",
+  "author": "lan",
+  "headBranch": "fix/webhook-signature",
+  "aiPercent": 20,
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Từ chối request có chữ ký sai",
+      "code": {
+        "file": "apps/web/src/app/api/webhooks/github/route.ts",
+        "lineStart": 12,
+        "lineEnd": 24,
+        "snippet": "if (!verify(body, sig)) return new Response(null, { status: 401 })"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "signature.test.ts · 3/3 qua"
+      },
+      "aiWritten": false,
+      "review": "pending"
+    },
+    {
+      "id": "c2",
+      "text": "Xử lý sự kiện synchronize",
+      "code": {
+        "file": "apps/web/src/app/api/webhooks/github/route.ts",
+        "lineStart": 26,
+        "lineEnd": 40,
+        "snippet": "case 'synchronize':"
+      },
+      "evidence": {
+        "kind": "none",
+        "detail": "Chưa có test"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    },
+    {
+      "id": "c3",
+      "text": "Ghi log delivery id",
+      "code": {
+        "file": "apps/web/src/app/api/webhooks/github/route.ts",
+        "lineStart": 8,
+        "lineEnd": 10,
+        "snippet": "console.info(deliveryId)"
+      },
+      "evidence": {
+        "kind": "lint_only",
+        "detail": "Chỉ có lint"
+      },
+      "aiWritten": false,
+      "review": "pending"
+    },
+    {
+      "id": "c4",
+      "text": "Trả 202 khi bỏ qua sự kiện lạ",
+      "code": {
+        "file": "apps/web/src/app/api/webhooks/github/route.ts",
+        "lineStart": 42,
+        "lineEnd": 46,
+        "snippet": "return new Response(null, { status: 202 })"
+      },
+      "evidence": {
+        "kind": "none",
+        "detail": "Chưa có test"
+      },
+      "aiWritten": false,
+      "review": "pending"
+    }
+  ],
+  "analysisStatus": "done"
+}

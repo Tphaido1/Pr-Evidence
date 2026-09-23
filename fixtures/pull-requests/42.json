@@ -1,0 +1,78 @@
+{
+  "id": "acme/pr-evidence#42",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "updatedAt": "2026-09-22T09:00:00.000Z",
+  "number": 42,
+  "title": "Thêm giới hạn thời gian cho runner",
+  "author": "minh",
+  "headBranch": "feature/runner-timeout",
+  "aiPercent": 40,
+  "claims": [
+    {
+      "id": "c1",
+      "text": "Runner dừng job sau 60 giây",
+      "code": {
+        "file": "packages/checks/src/run.ts",
+        "lineStart": 12,
+        "lineEnd": 31,
+        "snippet": "const killTimer = setTimeout(() => child.kill(), 60_000)"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "run.timeout.test.ts · 3/3 qua"
+      },
+      "aiWritten": true,
+      "review": "approved"
+    },
+    {
+      "id": "c2",
+      "text": "Giới hạn bộ nhớ 512 MB mỗi job",
+      "code": {
+        "file": "apps/runner/src/jobs/limits.ts",
+        "lineStart": 5,
+        "lineEnd": 18,
+        "snippet": "const MAX_MEMORY_MB = 512"
+      },
+      "evidence": {
+        "kind": "lint_only",
+        "detail": "Chưa có test cho giới hạn bộ nhớ"
+      },
+      "aiWritten": true,
+      "review": "pending"
+    },
+    {
+      "id": "c3",
+      "text": "Ghi kết quả timeout lên check run",
+      "code": {
+        "file": "apps/web/src/app/api/webhooks/github/check.ts",
+        "lineStart": 40,
+        "lineEnd": 66,
+        "snippet": "await octokit.checks.update({ conclusion: 'timed_out' })"
+      },
+      "evidence": {
+        "kind": "test_pass",
+        "detail": "check.timeout.test.ts · 2/2 qua"
+      },
+      "aiWritten": false,
+      "review": "pending"
+    },
+    {
+      "id": "c4",
+      "text": "Không đổi hành vi của job ngắn",
+      "code": {
+        "file": "packages/checks/src/run.ts",
+        "lineStart": 33,
+        "lineEnd": 49,
+        "snippet": "if (elapsed < limit) return result"
+      },
+      "evidence": {
+        "kind": "test_fail",
+        "detail": "run.short.test.ts · 1 lỗi"
+      },
+      "aiWritten": false,
+      "review": "returned"
+    }
+  ],
+  "analysisStatus": "done"
+}

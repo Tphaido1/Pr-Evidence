@@ -1,0 +1,6 @@
+.side { width: 240px; flex-shrink: 0; background: var(--white); border-right: 1px solid var(--line); padding: 24px; display: flex; flex-direction: column; gap: 24px; }
+.name { font-size: 18px; font-weight: 600; }
+.nav { display: flex; flex-direction: column; gap: 8px; }
+.item, .itemActive { padding: 10px 12px; border-radius: 8px; font-weight: 500; color: var(--mute); }
+.itemActive { background: var(--brand-soft); color: var(--brand); font-weight: 600; }
+.spacer { flex: 1; }

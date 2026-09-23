@@ -1,0 +1,13 @@
+{
+  "id": "acme/pr-evidence#50",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "number": 50,
+  "title": "Thêm bộ lọc theo tác giả",
+  "author": "hung",
+  "headBranch": "feature/author-filter",
+  "aiPercent": 0,
+  "claims": [],
+  "analysisStatus": "queued",
+  "updatedAt": "2026-09-22T09:10:00.000Z"
+}

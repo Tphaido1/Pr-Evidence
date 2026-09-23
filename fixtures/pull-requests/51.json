@@ -1,0 +1,14 @@
+{
+  "id": "acme/pr-evidence#51",
+  "repo": "acme/pr-evidence",
+  "baseBranch": "main",
+  "number": 51,
+  "title": "Nâng cấp driver MongoDB",
+  "author": "lan",
+  "headBranch": "chore/mongodb-upgrade",
+  "aiPercent": 0,
+  "claims": [],
+  "analysisStatus": "failed",
+  "analysisError": "vitest thoát với mã 1: không cài được dependency, thiếu quyền mạng trong sandbox",
+  "updatedAt": "2026-09-22T09:05:00.000Z"
+}

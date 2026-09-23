@@ -1,0 +1,4 @@
+.row { display: flex; gap: 8px; }
+.on, .off { padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 500; border: 1px solid var(--line); }
+.on { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.off { background: var(--white); color: var(--ink); }

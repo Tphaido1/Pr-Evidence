@@ -1,0 +1,10 @@
+.back { color: var(--brand); font-size: 13px; font-weight: 500; }
+.head { display: flex; flex-direction: column; gap: 8px; }
+.titleRow { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.title { margin: 0; font-size: 28px; font-weight: 600; }
+.meta { margin: 0; color: var(--mute); }
+.stats { display: flex; gap: 16px; }
+.stat { flex: 1; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; display: flex; flex-direction: column; gap: 4px; }
+.statLabel { font-size: 12px; font-weight: 500; color: var(--mute); }
+.statValue, .statBad { font-size: 24px; font-weight: 600; }
+.statBad { color: var(--bad); }

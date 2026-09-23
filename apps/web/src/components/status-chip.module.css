@@ -1,0 +1,6 @@
+.chip { display: inline-flex; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; white-space: nowrap; }
+.ok { background: var(--ok-bg); color: var(--ok); }
+.warn { background: var(--warn-bg); color: var(--warn); }
+.bad { background: var(--bad-bg); color: var(--bad); }
+.ai { background: var(--ai-bg); color: var(--ai); }
+.plain { background: var(--bg); color: var(--mute); }

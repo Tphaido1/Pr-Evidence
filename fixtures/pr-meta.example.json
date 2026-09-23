@@ -1,0 +1,12 @@
+{
+  "repo": "acme/pr-evidence",
+  "number": 42,
+  "title": "Thêm giới hạn thời gian cho runner",
+  "author": "minh",
+  "headBranch": "feature/runner-timeout",
+  "baseBranch": "main",
+  "description": "Thay đổi này làm gì:\n- Runner dừng job sau 60 giây\n\nCách kiểm tra:\n- pnpm test\n\nPhần nào do AI viết (nếu có):\nKhông\n",
+  "commits": [
+    { "message": "feat(runner): dừng job sau 60 giây", "additions": 20 }
+  ]
+}

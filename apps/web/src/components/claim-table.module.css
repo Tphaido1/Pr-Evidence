@@ -1,0 +1,12 @@
+.table { background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.row { display: flex; align-items: flex-start; gap: 16px; padding: 16px 20px; }
+.row + .row { border-top: 1px solid transparent; }
+.head { background: #fafafc; padding-block: 12px; font-size: 12px; font-weight: 500; color: var(--mute); align-items: center; }
+.claim { flex: 1; min-width: 0; }
+.code { width: 300px; display: flex; flex-direction: column; gap: 6px; }
+.evidence { width: 240px; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.ai { width: 90px; }
+.review { width: 150px; }
+.file { font-size: 13px; font-weight: 500; overflow-wrap: anywhere; }
+.snippet { margin: 0; padding: 8px; border-radius: 6px; background: var(--code-bg); color: var(--mute); font-size: 12px; font-family: inherit; white-space: pre-wrap; overflow-wrap: anywhere; }
+.detail { font-size: 12px; color: var(--mute); }

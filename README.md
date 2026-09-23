@@ -14,6 +14,7 @@ Chưa làm: tự sửa code, tự merge, hỗ trợ GitLab.
 
 ## Cấu trúc thư mục
 
+```
 apps/
   web/          Next.js (App Router): trang reviewer, API, và webhook GitHub (/api/webhooks/github)
   runner/       CLI chạy qua CI (.github/workflows/pr-evidence.yml): chạy test/lint sandbox, tách claim, ghép evidence, cập nhật DB & GitHub

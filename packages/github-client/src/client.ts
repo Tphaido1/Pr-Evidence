@@ -2,7 +2,7 @@ import type { PullRequest } from "@pr-evidence/types";
 import { checkRunConclusion, renderSummaryMarkdown } from "./markdown";
 
 export interface GithubFetch {
-  (path: string, init: { method: string; body: unknown }): Promise<{ ok: boolean; status: number; text: () => Promise<string> }>;
+  (path: string, init: { method: string; body: unknown; headers?: Record<string, string> }): Promise<{ ok: boolean; status: number; text: () => Promise<string> }>;
 }
 
 export interface GithubClientOptions {
@@ -16,6 +16,7 @@ function makeFetch(token?: string): GithubFetch {
     const headers: Record<string, string> = {
       accept: "application/vnd.github+json",
       "user-agent": "pr-evidence-app",
+      ...init.headers,
     };
     if (token) headers.authorization = `Bearer ${token}`;
     if (init.body !== undefined) {
@@ -117,6 +118,139 @@ export async function fetchGithubPullRequests(
     state: p.state,
     updatedAt: p.updated_at,
   }));
+}
+
+export interface FetchedPullRequestDetail extends FetchedPullRequest {
+  headSha: string;
+}
+
+/** Lấy thông tin chi tiết một Pull Request kèm head commit SHA */
+export async function fetchPullRequestDetail(
+  repoFullName: string,
+  pullNumber: number,
+  opts: { token?: string; fetchImpl?: GithubFetch } = {},
+): Promise<FetchedPullRequestDetail | null> {
+  const call = opts.fetchImpl ?? makeFetch(opts.token);
+  const res = await call(`/repos/${repoFullName}/pulls/${pullNumber}`, {
+    method: "GET",
+    body: undefined,
+  });
+  if (!res.ok) return null;
+  const p = JSON.parse(await res.text()) as {
+    number: number;
+    title: string;
+    user: { login: string };
+    body: string | null;
+    html_url: string;
+    state: string;
+    head: { ref: string; sha: string };
+    base: { ref: string };
+    updated_at: string;
+  };
+  return {
+    id: `${repoFullName}#${p.number}`,
+    repo: repoFullName,
+    number: p.number,
+    title: p.title,
+    author: p.user?.login ?? "unknown",
+    headBranch: p.head.ref,
+    headSha: p.head.sha,
+    baseBranch: p.base.ref,
+    description: p.body ?? "",
+    url: p.html_url,
+    state: p.state,
+    updatedAt: p.updated_at,
+  };
+}
+
+/** Tải nội dung diff thô (unified diff) của Pull Request */
+export async function fetchPullRequestDiff(
+  repoFullName: string,
+  pullNumber: number,
+  opts: { token?: string; fetchImpl?: GithubFetch } = {},
+): Promise<string> {
+  const call = opts.fetchImpl ?? makeFetch(opts.token);
+  const res = await call(`/repos/${repoFullName}/pulls/${pullNumber}`, {
+    method: "GET",
+    body: undefined,
+    headers: { accept: "application/vnd.github.v3.diff" },
+  });
+  if (!res.ok) return "";
+  return await res.text();
+}
+
+export interface PullRequestCommit {
+  message: string;
+  additions: number;
+  sha?: string;
+}
+
+/** Lấy danh sách commit messages và additions của Pull Request */
+export async function fetchPullRequestCommits(
+  repoFullName: string,
+  pullNumber: number,
+  opts: { token?: string; fetchImpl?: GithubFetch } = {},
+): Promise<PullRequestCommit[]> {
+  const call = opts.fetchImpl ?? makeFetch(opts.token);
+  const res = await call(`/repos/${repoFullName}/pulls/${pullNumber}/commits?per_page=100`, {
+    method: "GET",
+    body: undefined,
+  });
+  if (!res.ok) return [];
+  const list = JSON.parse(await res.text()) as {
+    sha?: string;
+    commit: { message: string };
+    stats?: { additions?: number };
+  }[];
+
+  return list.map((c) => ({
+    sha: c.sha,
+    message: c.commit.message,
+    additions: c.stats?.additions ?? 0,
+  }));
+}
+
+export interface FetchedChecks {
+  tests: { file: string; passed: number; failed: number }[];
+  lints: { file: string; errors: number }[];
+}
+
+/** Lấy kết quả CI check-runs từ GitHub Actions (nếu repo có cấu hình CI) */
+export async function fetchPullRequestChecks(
+  repoFullName: string,
+  ref: string,
+  opts: { token?: string; fetchImpl?: GithubFetch } = {},
+): Promise<FetchedChecks> {
+  const call = opts.fetchImpl ?? makeFetch(opts.token);
+  const res = await call(`/repos/${repoFullName}/commits/${ref}/check-runs`, {
+    method: "GET",
+    body: undefined,
+  });
+  if (!res.ok) return { tests: [], lints: [] };
+  const data = JSON.parse(await res.text()) as {
+    check_runs?: { name: string; conclusion: string | null; status: string }[];
+  };
+
+  const tests: { file: string; passed: number; failed: number }[] = [];
+  const lints: { file: string; errors: number }[] = [];
+
+  for (const run of data.check_runs ?? []) {
+    const isCompleted = run.status === "completed";
+    const passed = run.conclusion === "success";
+    const nameLower = run.name.toLowerCase();
+
+    if (nameLower.includes("lint") || nameLower.includes("eslint") || nameLower.includes("prettier")) {
+      lints.push({ file: run.name, errors: isCompleted && passed ? 0 : 1 });
+    } else {
+      tests.push({
+        file: run.name,
+        passed: isCompleted && passed ? 1 : 0,
+        failed: isCompleted && !passed ? 1 : 0,
+      });
+    }
+  }
+
+  return { tests, lints };
 }
 
 /** Ghi check run và comment tóm tắt lên GitHub cho một PR đã phân tích. Không ghi gì nếu request lỗi — chỉ log. */

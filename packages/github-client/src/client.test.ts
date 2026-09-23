@@ -27,4 +27,75 @@ describe("publishResults", () => {
     expect(spy).toHaveBeenCalledTimes(2);
     spy.mockRestore();
   });
+
+  it("fetchPullRequestDetail lấy chi tiết PR và headSha", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({
+        number: 42,
+        title: "Test PR",
+        user: { login: "alice" },
+        body: "PR body",
+        html_url: "https://github.com/a/b/pull/42",
+        state: "open",
+        head: { ref: "feature", sha: "sha123" },
+        base: { ref: "main" },
+        updated_at: "2026-01-01T00:00:00.000Z",
+      }),
+    }));
+    const { fetchPullRequestDetail } = await import("./client");
+    const detail = await fetchPullRequestDetail("a/b", 42, { fetchImpl });
+    expect(detail).toBeDefined();
+    expect(detail?.headSha).toBe("sha123");
+    expect(detail?.author).toBe("alice");
+  });
+
+  it("fetchPullRequestDiff truyền header diff và trả về raw text", async () => {
+    let capturedHeaders: Record<string, string> | undefined;
+    const fetchImpl = vi.fn(async (_path: string, init: { headers?: Record<string, string> }) => {
+      capturedHeaders = init.headers;
+      return { ok: true, status: 200, text: async () => "diff --git a/file b/file" };
+    });
+    const { fetchPullRequestDiff } = await import("./client");
+    const diff = await fetchPullRequestDiff("a/b", 42, { fetchImpl });
+    expect(diff).toBe("diff --git a/file b/file");
+    expect(capturedHeaders?.accept).toBe("application/vnd.github.v3.diff");
+  });
+
+  it("fetchPullRequestCommits lấy danh sách commit", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify([
+        { sha: "c1", commit: { message: "feat: add feature" }, stats: { additions: 10 } },
+      ]),
+    }));
+    const { fetchPullRequestCommits } = await import("./client");
+    const commits = await fetchPullRequestCommits("a/b", 42, { fetchImpl });
+    expect(commits).toHaveLength(1);
+    expect(commits[0]?.message).toBe("feat: add feature");
+    expect(commits[0]?.additions).toBe(10);
+  });
+
+  it("fetchPullRequestChecks phân loại test và lint", async () => {
+    const fetchImpl = vi.fn(async () => ({
+      ok: true,
+      status: 200,
+      text: async () => JSON.stringify({
+        check_runs: [
+          { name: "unit-tests", status: "completed", conclusion: "success" },
+          { name: "eslint", status: "completed", conclusion: "failure" },
+        ],
+      }),
+    }));
+    const { fetchPullRequestChecks } = await import("./client");
+    const checks = await fetchPullRequestChecks("a/b", "sha123", { fetchImpl });
+    expect(checks.tests).toHaveLength(1);
+    expect(checks.tests[0]?.passed).toBe(1);
+    expect(checks.tests[0]?.failed).toBe(0);
+    expect(checks.lints).toHaveLength(1);
+    expect(checks.lints[0]?.errors).toBe(1);
+  });
 });
+

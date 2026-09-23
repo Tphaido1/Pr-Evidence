@@ -13,22 +13,29 @@
   margin-left: auto;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   background: var(--white);
   border: 1px solid var(--line);
   color: var(--ink);
   font-size: 13px;
-  font-weight: 500;
-  padding: 6px 12px;
-  border-radius: var(--radius);
+  font-weight: 550;
+  padding: 7px 13px;
+  border-radius: 10px;
   text-decoration: none;
   cursor: pointer;
-  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.exportBtn svg {
+  color: #16a34a;
 }
 
 .exportBtn:hover {
-  border-color: var(--brand);
-  color: var(--brand);
-  background: #f0fdf4;
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  box-shadow: 0 3px 8px -1px rgba(15, 23, 42, 0.08);
+  transform: translateY(-1px);
 }
+
 

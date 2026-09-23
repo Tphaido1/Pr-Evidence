@@ -1,78 +1,283 @@
-.bar {
+.container {
+  margin: 18px 0 12px;
   display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin: 16px 0;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.searchWrap {
+/* Khung chính của thanh tìm kiếm (Toolbar Frame) */
+.toolbarFrame {
+  display: flex;
+  align-items: center;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.toolbarFrame:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 4px rgba(15, 23, 42, 0.04);
+}
+
+.toolbarFocused {
+  border-color: var(--brand, #2563eb) !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12), 0 4px 14px -2px rgba(37, 99, 235, 0.08) !important;
+}
+
+/* Phần ô tìm kiếm */
+.searchSection {
   position: relative;
-  flex: 1;
-  min-width: 240px;
-}
-
-.icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-muted);
-  pointer-events: none;
   display: flex;
   align-items: center;
+  flex: 1;
+  min-width: 220px;
+  padding: 0 12px 0 14px;
+}
+
+.searchIcon {
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  margin-right: 10px;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.toolbarFocused .searchIcon {
+  color: var(--brand, #2563eb);
 }
 
 .input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 0;
+  font-size: 13.5px;
+  color: var(--ink, #0f172a);
+  outline: none;
+  font-family: inherit;
+  font-weight: 450;
   width: 100%;
-  box-sizing: border-box;
-  padding: 9px 36px 9px 34px;
-  font-size: 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+.input::placeholder {
+  color: #94a3b8;
+  font-weight: 400;
 }
 
 .clearBtn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--color-muted);
-  cursor: pointer;
-  padding: 4px;
-  font-size: 12px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: none;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: 6px;
+  flex-shrink: 0;
 }
 
 .clearBtn:hover {
-  color: inherit;
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: scale(1.08);
+}
+
+.shortcutBadge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #94a3b8;
+  user-select: none;
+  pointer-events: none;
+  margin-left: 8px;
+  flex-shrink: 0;
+}
+
+/* Vạch chia ngăn */
+.divider {
+  width: 1px;
+  height: 24px;
+  background: var(--line, #e2e8f0);
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* Phần chọn Repository */
+.repoSection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 14px;
+  background: #fafbfc;
+  transition: background 0.15s ease;
+  flex-shrink: 0;
+}
+
+.repoSection:hover {
+  background: #f1f5f9;
+}
+
+.repoIcon {
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  pointer-events: none;
+  flex-shrink: 0;
 }
 
 .select {
-  padding: 9px 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  padding: 10px 24px 10px 0;
   font-size: 13px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  color: inherit;
+  font-weight: 500;
+  color: #334155;
   cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  max-width: 220px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
-.select:focus {
-  outline: none;
-  border-color: var(--color-primary);
+.selectArrow {
+  position: absolute;
+  right: 12px;
+  color: #94a3b8;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s ease;
 }
+
+.repoSection:focus-within .selectArrow {
+  transform: rotate(180deg);
+  color: var(--brand, #2563eb);
+}
+
+/* Thanh các tag bộ lọc đang bật */
+.activeBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 2px 2px;
+  font-size: 12px;
+}
+
+.activeLabel {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  animation: chipEnter 0.18s ease-out;
+}
+
+@keyframes chipEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.chipKey {
+  color: #3b82f6;
+  font-size: 11px;
+}
+
+.chipVal {
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.chipRemove {
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  transition: all 0.15s;
+}
+
+.chipRemove:hover {
+  color: #dc2626;
+  transform: scale(1.2);
+}
+
+.resetBtn {
+  background: none;
+  border: none;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: all 0.15s ease;
+}
+
+.resetBtn:hover {
+  color: #991b1b;
+  background: #fee2e2;
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .toolbarFrame {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .divider {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+  }
+  .repoSection {
+    border-left: none;
+    padding: 6px 14px;
+  }
+  .select {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+

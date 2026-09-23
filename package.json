@@ -2,7 +2,9 @@
   "name": "pr-evidence",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=24" },
+  "engines": {
+    "node": ">=24"
+  },
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "pnpm --filter @pr-evidence/web dev",
@@ -11,5 +13,8 @@
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
     "seed": "pnpm --filter @pr-evidence/db seed"
+  },
+  "devDependencies": {
+    "mongodb-memory-server": "^11.3.0"
   }
 }

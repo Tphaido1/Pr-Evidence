@@ -1,5 +1,13 @@
+import dns from "node:dns";
 import { MongoClient, type Collection, type Db } from "mongodb";
 import type { AppNotification, PullRequest, Repository } from "@pr-evidence/types";
+
+// Hỗ trợ phân giải SRV của MongoDB Atlas trên Windows khi DNS cục bộ chặn UDP SRV
+try {
+  dns.setServers(["8.8.8.8", "1.1.1.1"]);
+} catch {
+  // Bỏ qua nếu môi trường không cho phép setServers
+}
 
 /** Document lưu trong MongoDB: dùng chuỗi "owner/repo#number" làm _id. */
 export type PullRequestDoc = Omit<PullRequest, "id"> & { _id: string };

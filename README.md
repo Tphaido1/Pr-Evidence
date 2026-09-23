@@ -4,11 +4,13 @@ GitHub App cho đội dev nhỏ. Với mỗi pull request, nó lập một bản
 
 ## Bản đầu làm gì
 
-- Nhận webhook từ GitHub khi PR mở hoặc có commit mới.
+- Quản lý Repository và lấy trực tiếp dữ liệu/PR từ GitHub REST API (hỗ trợ nhập cả tên `owner/repo` hoặc dán link đầy đủ `https://github.com/...`).
+- Hệ thống thông báo in-app thời gian thực (Notification Bell) mỗi khi có PR mới xuất hiện.
+- Phân tích PR trực tiếp (On-Demand Analysis) ngay trên giao diện web thông qua GitHub API, hoặc chạy tự động qua webhook/CI Actions.
 - Tách các claim từ mô tả PR và commit.
-- Ghép mỗi claim với đoạn diff và kết quả test/lint liên quan, chạy trong giới hạn thời gian và tài nguyên.
-- Gắn nhãn phần nào do AI viết.
-- Cho reviewer duyệt hoặc trả lại từng dòng trong bảng.
+- Ghép mỗi claim với đoạn diff và kết quả test/lint liên quan (chạy qua CI sandbox hoặc trích xuất từ GitHub Check Runs).
+- Gắn nhãn phần nào do AI viết và tỷ lệ % code AI.
+- Cho reviewer duyệt hoặc trả lại từng dòng trong bảng claim-code-evidence.
 
 Chưa làm: tự sửa code, tự merge, hỗ trợ GitLab.
 
@@ -16,18 +18,18 @@ Chưa làm: tự sửa code, tự merge, hỗ trợ GitLab.
 
 ```
 apps/
-  web/          Next.js (App Router): trang reviewer, API, và webhook GitHub (/api/webhooks/github)
+  web/          Next.js (App Router): trang reviewer, quản lý repos, chuông thông báo, API và webhook GitHub (/api/webhooks/github)
   runner/       CLI chạy qua CI (.github/workflows/pr-evidence.yml): chạy test/lint sandbox, tách claim, ghép evidence, cập nhật DB & GitHub
   github-app/   khung cũ đã gộp vào apps/web (xem docs/decisions/0001-stack.md)
 
 packages/
-  types/        kiểu dữ liệu dùng chung (PullRequest, Claim, Evidence, AnalysisStatus, ...)
+  types/        kiểu dữ liệu dùng chung (PullRequest, Repository, AppNotification, Claim, Evidence, AnalysisStatus, ...)
   claims/       tách claim từ mô tả PR và commit
   ai-labels/    nhận diện commit/claim do AI viết, tính tỷ lệ % code AI
   checks/       chạy lệnh test/lint có giới hạn thời gian/bộ nhớ, cô lập bằng Docker
   evidence/     parse diff, ghép claim với code hunk qua token overlap, tổng hợp evidence
-  db/           MongoDB: đọc/ghi pull_requests, bảo toàn lịch sử duyệt khi phân tích lại
-  github-client/ tạo Check Run và đăng comment bảng claim-code-evidence lên GitHub
+  db/           MongoDB (Atlas & Local): quản lý pull_requests, repositories, notifications, bảo toàn lịch sử duyệt
+  github-client/ chuẩn hóa URL repo, lấy metadata, PRs, diff, commits, check-runs và đăng check run/comment lên GitHub
   config/       cấu hình dùng chung
 evals/          bộ PR có đáp án chuẩn để đo giảm lỗi
 fixtures/       PR mẫu dùng cho test (7 PR mẫu với các trạng thái done, queued, failed)
@@ -39,13 +41,13 @@ Test viết cạnh file nguồn, đặt tên `*.test.ts`.
 
 ## Stack
 
-Next.js (App Router) và TypeScript cho cả giao diện lẫn API. MongoDB làm database. Lý do đổi so với khung ban đầu nằm trong `docs/decisions/0001-stack.md`.
+Next.js (App Router) và TypeScript cho cả giao diện lẫn API. MongoDB (hỗ trợ Atlas cluster và local) làm database. Lý do đổi so với khung ban đầu nằm trong `docs/decisions/0001-stack.md`.
 
 ## Chạy thử
 
 ```bash
 cp .env.example .env
-docker compose up -d        # MongoDB ở localhost:27017
+# Cấu hình MONGODB_URI (dùng MongoDB Atlas hoặc MongoDB local trên cổng 27017)
 pnpm install
 pnpm seed                   # nạp 7 PR mẫu từ fixtures/pull-requests (đủ các trạng thái done, queued, failed)
 pnpm dev                    # http://localhost:3000
@@ -58,7 +60,7 @@ Mặc định không cần đăng nhập. Muốn bật đăng nhập, đặt `RE
 
 ## Trạng thái
 
-Đã có: trang danh sách PR, trang chi tiết với bảng claim-code-evidence, nút duyệt/trả lại từng dòng, webhook nhận sự kiện PR (có kiểm tra chữ ký), quản lý Repository lấy trực tiếp dữ liệu PR từ GitHub, hệ thống chuông thông báo (Notification) mỗi khi có PR mới, tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi) hiện rõ trên giao diện, và test cho toàn bộ các phần trên (135+ test).
+Đã có: trang danh sách PR, trang chi tiết với bảng claim-code-evidence, nút duyệt/trả lại từng dòng, quản lý Repository lấy trực tiếp dữ liệu từ GitHub (tự động nhận diện cả link trình duyệt, link `.git`, SSH), tính năng phân tích trực tiếp theo yêu cầu ("⚡ Phân tích ngay") qua GitHub REST API ngay trên web app, webhook nhận sự kiện PR (có kiểm tra chữ ký), hệ thống chuông thông báo (Notification) mỗi khi có PR mới, tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi), kết nối MongoDB Atlas đám mây với cơ chế DNS fallback cho Windows, và test cho toàn bộ các phần trên (147 test).
 Chưa có: tài khoản riêng từng reviewer (đang dùng chung 1 mật khẩu — chấp nhận được cho một nhóm nhỏ dùng chung, xem `docs/decisions/0002-auth.md`), rate limit cho đăng nhập, seccomp/giới hạn đĩa riêng cho container test.
 
 ## Chạy runner cho một PR (thủ công)

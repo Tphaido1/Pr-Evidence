@@ -65,3 +65,26 @@ export interface PullRequestSummary {
   status: PullRequestStatus;
   analysisStatus: AnalysisStatus;
 }
+
+export interface Repository {
+  /** "owner/repo", dùng làm _id trong MongoDB */
+  id: string;
+  owner: string;
+  name: string;
+  description?: string;
+  url: string;
+  defaultBranch: string;
+  openPrCount: number;
+  lastSyncedAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  type: "new_pr" | "pr_analyzed";
+  repo: string;
+  prNumber: number;
+  title: string;
+  author: string;
+  read: boolean;
+  createdAt: string;
+}

@@ -1,0 +1,152 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.bellBtn {
+  position: relative;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.bellBtn:hover {
+  background: var(--brand-soft);
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.badge {
+  background: var(--bad);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.dropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: 320px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fafbfc;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 13px;
+  margin: 0;
+}
+
+.markAllBtn {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.markAllBtn:hover {
+  text-decoration: underline;
+}
+
+.list {
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.empty {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--mute);
+  font-size: 13px;
+}
+
+.item {
+  display: block;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s ease;
+  cursor: pointer;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item:hover {
+  background: #f8fafc;
+}
+
+.unread {
+  background: #f0f7ff;
+}
+
+.itemTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.itemRepo {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--mute);
+}
+
+.itemTime {
+  font-size: 11px;
+  color: var(--mute);
+}
+
+.itemTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+
+.itemAuthor {
+  font-size: 12px;
+  color: var(--mute);
+}
+
+.unreadDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--brand);
+  border-radius: 50%;
+  margin-right: 6px;
+}

@@ -51,6 +51,9 @@ importers:
       '@pr-evidence/evidence':
         specifier: workspace:*
         version: link:../../packages/evidence
+      '@pr-evidence/github-client':
+        specifier: workspace:*
+        version: link:../../packages/github-client
       '@pr-evidence/types':
         specifier: workspace:*
         version: link:../../packages/types

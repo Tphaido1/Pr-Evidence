@@ -13,6 +13,7 @@
   "dependencies": {
     "@pr-evidence/db": "workspace:*",
     "@pr-evidence/evidence": "workspace:*",
+    "@pr-evidence/github-client": "workspace:*",
     "@pr-evidence/types": "workspace:*",
     "next": "^15.5.0",
     "react": "^19.0.0",

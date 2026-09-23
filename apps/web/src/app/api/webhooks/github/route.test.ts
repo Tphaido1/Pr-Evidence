@@ -1,8 +1,11 @@
 import { createHmac } from "node:crypto";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@pr-evidence/db", () => ({ upsertPullRequestShell: vi.fn(async () => {}) }));
-import { upsertPullRequestShell } from "@pr-evidence/db";
+vi.mock("@pr-evidence/db", () => ({
+  upsertPullRequestShell: vi.fn(async () => {}),
+  createNotification: vi.fn(async () => ({})),
+}));
+import { createNotification, upsertPullRequestShell } from "@pr-evidence/db";
 import { POST } from "./route";
 
 const secret = "test-secret";
@@ -60,7 +63,7 @@ describe("POST /api/webhooks/github", () => {
     expect(upsertPullRequestShell).not.toHaveBeenCalled();
   });
 
-  it("202 và gọi upsertPullRequestShell với dữ liệu đúng khi action là opened", async () => {
+  it("202 và gọi upsertPullRequestShell cùng createNotification với dữ liệu đúng khi action là opened", async () => {
     const res = await POST(req(openedPayload));
     expect(res.status).toBe(202);
     expect(upsertPullRequestShell).toHaveBeenCalledWith({
@@ -71,6 +74,13 @@ describe("POST /api/webhooks/github", () => {
       author: "minh",
       headBranch: "feat",
       baseBranch: "main",
+    });
+    expect(createNotification).toHaveBeenCalledWith({
+      type: "new_pr",
+      repo: "acme/pr-evidence",
+      prNumber: 42,
+      title: "t",
+      author: "minh",
     });
   });
 

@@ -58,7 +58,7 @@ Mặc định không cần đăng nhập. Muốn bật đăng nhập, đặt `RE
 
 ## Trạng thái
 
-Đã có: trang danh sách PR, trang chi tiết với bảng claim-code-evidence, nút duyệt/trả lại từng dòng, webhook nhận sự kiện PR (có kiểm tra chữ ký), tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi) hiện rõ trên giao diện thay vì bảng trống gây hiểu nhầm, và test cho toàn bộ các phần trên (120 test).
+Đã có: trang danh sách PR, trang chi tiết với bảng claim-code-evidence, nút duyệt/trả lại từng dòng, webhook nhận sự kiện PR (có kiểm tra chữ ký), quản lý Repository lấy trực tiếp dữ liệu PR từ GitHub, hệ thống chuông thông báo (Notification) mỗi khi có PR mới, tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi) hiện rõ trên giao diện, và test cho toàn bộ các phần trên (135+ test).
 Chưa có: tài khoản riêng từng reviewer (đang dùng chung 1 mật khẩu — chấp nhận được cho một nhóm nhỏ dùng chung, xem `docs/decisions/0002-auth.md`), rate limit cho đăng nhập, seccomp/giới hạn đĩa riêng cho container test.
 
 ## Chạy runner cho một PR (thủ công)

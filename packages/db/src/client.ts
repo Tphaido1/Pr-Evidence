@@ -1,8 +1,14 @@
 import { MongoClient, type Collection, type Db } from "mongodb";
-import type { PullRequest } from "@pr-evidence/types";
+import type { AppNotification, PullRequest, Repository } from "@pr-evidence/types";
 
 /** Document lưu trong MongoDB: dùng chuỗi "owner/repo#number" làm _id. */
 export type PullRequestDoc = Omit<PullRequest, "id"> & { _id: string };
+
+/** Document lưu trong MongoDB: dùng chuỗi "owner/repo" làm _id. */
+export type RepositoryDoc = Omit<Repository, "id"> & { _id: string };
+
+/** Document lưu thông báo: dùng chuỗi uuid/timestamp làm _id. */
+export type AppNotificationDoc = Omit<AppNotification, "id"> & { _id: string };
 
 // Giữ một client duy nhất khi Next.js hot-reload ở chế độ dev.
 const globalForMongo = globalThis as unknown as { _mongo?: Promise<MongoClient> };
@@ -23,9 +29,23 @@ export async function pullRequests(): Promise<Collection<PullRequestDoc>> {
   return (await getDb()).collection<PullRequestDoc>("pull_requests");
 }
 
-/** MongoDB không cần migration schema. Chỉ cần tạo index một lần, chạy trong seed. */
+export async function repositories(): Promise<Collection<RepositoryDoc>> {
+  return (await getDb()).collection<RepositoryDoc>("repositories");
+}
+
+export async function notifications(): Promise<Collection<AppNotificationDoc>> {
+  return (await getDb()).collection<AppNotificationDoc>("notifications");
+}
+
+/** MongoDB không cần migration schema. Tạo index một lần. */
 export async function ensureIndexes(): Promise<void> {
-  const col = await pullRequests();
-  await col.createIndex({ repo: 1, number: -1 });
-  await col.createIndex({ updatedAt: -1 });
+  const prCol = await pullRequests();
+  await prCol.createIndex({ repo: 1, number: -1 });
+  await prCol.createIndex({ updatedAt: -1 });
+
+  const repoCol = await repositories();
+  await repoCol.createIndex({ lastSyncedAt: -1 });
+
+  const notifCol = await notifications();
+  await notifCol.createIndex({ read: 1, createdAt: -1 });
 }

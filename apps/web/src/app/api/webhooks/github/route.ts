@@ -1,4 +1,4 @@
-import { upsertPullRequestShell } from "@pr-evidence/db";
+import { createNotification, upsertPullRequestShell } from "@pr-evidence/db";
 import { verifySignature } from "@/lib/github-signature";
 
 interface PullRequestEvent {
@@ -42,6 +42,17 @@ export async function POST(req: Request) {
     baseBranch: body.pull_request.base.ref,
   });
 
+  if (body.action === "opened" || body.action === "reopened") {
+    await createNotification({
+      type: "new_pr",
+      repo,
+      prNumber: body.number,
+      title: body.pull_request.title,
+      author: body.pull_request.user.login,
+    });
+  }
+
   // Bước sau: đưa job tách claim và chạy test/lint vào hàng đợi cho apps/runner.
   return new Response(null, { status: 202 });
 }
+

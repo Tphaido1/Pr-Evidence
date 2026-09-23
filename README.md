@@ -7,6 +7,11 @@ GitHub App cho đội dev nhỏ. Với mỗi pull request, nó lập một bản
 - Quản lý Repository và lấy trực tiếp dữ liệu/PR từ GitHub REST API (hỗ trợ nhập cả tên `owner/repo` hoặc dán link đầy đủ `https://github.com/...`).
 - Hệ thống thông báo in-app thời gian thực (Notification Bell) mỗi khi có PR mới xuất hiện.
 - Phân tích PR trực tiếp (On-Demand Analysis) ngay trên giao diện web thông qua GitHub API, hoặc chạy tự động qua webhook/CI Actions.
+- **Tìm kiếm PR thông minh**: tìm kiếm tức thời (debounced) theo từ khóa tiêu đề, tác giả, `#số PR`, tên repository, hoặc nội dung claim; đồng thời kết hợp lọc theo repository và trạng thái duyệt.
+- **Xuất dữ liệu Excel / CSV chuẩn UTF-8**:
+  - Xuất danh sách tổng quan PR kèm thống kê evidence và trạng thái duyệt.
+  - Xuất chi tiết từng dòng Claim, code hunk, loại Evidence và kết quả duyệt ra file CSV có gắn UTF-8 BOM (`\uFEFF`) để mở trực tiếp trên Microsoft Excel, Google Sheets mà không vỡ font tiếng Việt.
+  - Hỗ trợ xuất bảng claim của từng PR riêng lẻ ngay trên trang chi tiết PR.
 - Tách các claim từ mô tả PR và commit.
 - Ghép mỗi claim với đoạn diff và kết quả test/lint liên quan (chạy qua CI sandbox hoặc trích xuất từ GitHub Check Runs).
 - Gắn nhãn phần nào do AI viết và tỷ lệ % code AI.
@@ -60,7 +65,7 @@ Mặc định không cần đăng nhập. Muốn bật đăng nhập, đặt `RE
 
 ## Trạng thái
 
-Đã có: trang danh sách PR, trang chi tiết với bảng claim-code-evidence, nút duyệt/trả lại từng dòng, quản lý Repository lấy trực tiếp dữ liệu từ GitHub (tự động nhận diện cả link trình duyệt, link `.git`, SSH), tính năng phân tích trực tiếp theo yêu cầu ("⚡ Phân tích ngay") qua GitHub REST API ngay trên web app, webhook nhận sự kiện PR (có kiểm tra chữ ký), hệ thống chuông thông báo (Notification) mỗi khi có PR mới, tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi), kết nối MongoDB Atlas đám mây với cơ chế DNS fallback cho Windows, và test cho toàn bộ các phần trên (147 test).
+Đã có: trang danh sách PR, tìm kiếm PR đa tiêu chí và xuất dữ liệu Excel/CSV (UTF-8 BOM), trang chi tiết với bảng claim-code-evidence và nút xuất CSV riêng cho từng PR, nút duyệt/trả lại từng dòng, quản lý Repository lấy trực tiếp dữ liệu từ GitHub (tự động nhận diện cả link trình duyệt, link `.git`, SSH), tính năng phân tích trực tiếp theo yêu cầu ("⚡ Phân tích ngay") qua GitHub REST API ngay trên web app, webhook nhận sự kiện PR (có kiểm tra chữ ký), hệ thống chuông thông báo (Notification) mỗi khi có PR mới, tách claim từ mô tả/commit, nhận diện AI, ghép claim với diff, chạy test/lint có giới hạn thời gian và cô lập bằng Docker khi có (`packages/checks/src/docker.ts`, không rò rỉ secret ra code PR — xem `docs/decisions/0003-sandbox.md`), workflow CI mẫu gọi `apps/runner`, ghi check run + comment tóm tắt lên GitHub, đăng nhập reviewer bằng mật khẩu dùng chung, vòng đời phân tích riêng (`analysisStatus`: chờ/đang chạy/xong/lỗi), kết nối MongoDB Atlas đám mây với cơ chế DNS fallback cho Windows, và bộ unit/integration test toàn diện (141 tests).
 Chưa có: tài khoản riêng từng reviewer (đang dùng chung 1 mật khẩu — chấp nhận được cho một nhóm nhỏ dùng chung, xem `docs/decisions/0002-auth.md`), rate limit cho đăng nhập, seccomp/giới hạn đĩa riêng cho container test.
 
 ## Chạy runner cho một PR (thủ công)

@@ -1,0 +1,78 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.searchWrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 36px 9px 34px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+}
+
+.clearBtn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clearBtn:hover {
+  color: inherit;
+}
+
+.select {
+  padding: 9px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: inherit;
+  cursor: pointer;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}

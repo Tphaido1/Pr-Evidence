@@ -73,3 +73,41 @@ export async function savePullRequest(pr: PullRequest): Promise<void> {
   const { id, ...rest } = { ...pr, claims };
   await col.replaceOne({ _id: id }, rest, { upsert: true });
 }
+
+export interface SearchPullRequestsOptions {
+  query?: string;
+  repo?: string;
+}
+
+/** Tìm kiếm PRs theo từ khóa (tiêu đề, tác giả, repo, số PR, claim) và theo repository */
+export async function searchPullRequests(opts: SearchPullRequestsOptions = {}): Promise<PullRequest[]> {
+  const col = await pullRequests();
+  const filter: Record<string, unknown> = {};
+
+  if (opts.repo) {
+    filter.repo = opts.repo;
+  }
+
+  const q = opts.query?.trim();
+  if (q) {
+    const numMatch = q.replace(/^#/, "");
+    const isNum = /^\d+$/.test(numMatch);
+
+    const conditions: Record<string, unknown>[] = [
+      { title: { $regex: q, $options: "i" } },
+      { author: { $regex: q, $options: "i" } },
+      { repo: { $regex: q, $options: "i" } },
+      { "claims.text": { $regex: q, $options: "i" } },
+    ];
+
+    if (isNum) {
+      conditions.push({ number: parseInt(numMatch, 10) });
+    }
+
+    filter.$or = conditions;
+  }
+
+  const docs = await col.find(filter).sort({ updatedAt: -1 }).toArray();
+  return docs.map(fromDoc);
+}
+

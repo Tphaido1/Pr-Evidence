@@ -108,7 +108,7 @@ export default function RepositoriesPage() {
           <input
             className={styles.input}
             type="text"
-            placeholder="Ví dụ: Tphaido1/Pr-Evidence"
+            placeholder="owner/repo hoặc dán link GitHub (VD: https://github.com/Tphaido1/Web-E-commerce)"
             value={repoInput}
             onChange={(e) => setRepoInput(e.target.value)}
             disabled={adding}
@@ -117,6 +117,9 @@ export default function RepositoriesPage() {
             {adding ? "Đang đồng bộ..." : "Thêm & Đồng bộ từ GitHub"}
           </button>
         </form>
+        <p style={{ fontSize: "12px", color: "var(--color-muted)", margin: "4px 0 0 0" }}>
+          Hỗ trợ định dạng <code>owner/repo</code> hoặc đường dẫn URL đầy đủ (ví dụ: <code>https://github.com/owner/repo</code>). Với repo private, hãy cấu hình <code>GITHUB_TOKEN</code> trong <code>.env</code>.
+        </p>
         {error && <div className={styles.error}>{error}</div>}
         {success && <div className={styles.success}>{success}</div>}
       </div>

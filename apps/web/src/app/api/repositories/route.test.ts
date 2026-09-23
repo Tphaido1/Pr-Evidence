@@ -8,10 +8,14 @@ vi.mock("@pr-evidence/db", () => ({
   createNotification: vi.fn(),
 }));
 
-vi.mock("@pr-evidence/github-client", () => ({
-  fetchGithubRepo: vi.fn(),
-  fetchGithubPullRequests: vi.fn(),
-}));
+vi.mock("@pr-evidence/github-client", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@pr-evidence/github-client")>();
+  return {
+    ...actual,
+    fetchGithubRepo: vi.fn(),
+    fetchGithubPullRequests: vi.fn(),
+  };
+});
 
 import {
   createNotification,
@@ -123,6 +127,27 @@ describe("Repositories API Route", () => {
       );
       expect(upsertPullRequestShell).toHaveBeenCalled();
       expect(upsertRepository).toHaveBeenCalled();
+    });
+
+    it("tự động chuẩn hóa khi người dùng nhập full URL https://github.com/owner/repo", async () => {
+      vi.mocked(fetchGithubRepo).mockResolvedValueOnce({
+        id: "owner/repo",
+        owner: "owner",
+        name: "repo",
+        url: "https://github.com/owner/repo",
+        defaultBranch: "main",
+        openPrCount: 0,
+        lastSyncedAt: "2026-09-23T00:00:00.000Z",
+      });
+      vi.mocked(fetchGithubPullRequests).mockResolvedValueOnce([]);
+
+      const req = new Request("http://localhost/api/repositories", {
+        method: "POST",
+        body: JSON.stringify({ repo: "https://github.com/owner/repo" }),
+      });
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      expect(fetchGithubRepo).toHaveBeenCalledWith("owner/repo", expect.anything());
     });
   });
 });

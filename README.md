@@ -2,8 +2,6 @@
 
 GitHub App cho đội dev nhỏ. Với mỗi pull request, nó lập một bảng gồm claim, code và evidence: PR nói gì, đoạn code nào tương ứng, và test hoặc lint nào chứng minh điều đó. Reviewer đọc bảng này thay vì tự đoán xem lời mô tả có khớp với diff hay không.
 
-Đây là ý tưởng số 9 trong báo cáo web-demand-report. Báo cáo cho điểm 18/25 và độ khó MVP là dễ đến trung bình. Lý do chọn: theo Stack Overflow Developer Survey 2025, 84% người trả lời đang dùng hoặc dự định dùng AI khi phát triển, nhưng 46% không tin độ chính xác của nó. Vì vậy sản phẩm cần chứng minh được mức giảm lỗi, không chỉ sinh thêm nhận xét.
-
 ## Bản đầu làm gì
 
 - Nhận webhook từ GitHub khi PR mở hoặc có commit mới.

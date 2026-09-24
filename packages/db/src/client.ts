@@ -18,19 +18,39 @@ export type RepositoryDoc = Omit<Repository, "id"> & { _id: string };
 /** Document lưu thông báo: dùng chuỗi uuid/timestamp làm _id. */
 export type AppNotificationDoc = Omit<AppNotification, "id"> & { _id: string };
 
-// Giữ một client duy nhất khi Next.js hot-reload ở chế độ dev.
-const globalForMongo = globalThis as unknown as { _mongo?: Promise<MongoClient> };
+// Giữ một client duy nhất khi Next.js hot-reload ở chế độ dev hoặc serverless.
+const globalForMongo = globalThis as unknown as {
+  _mongo?: Promise<MongoClient>;
+  _indexesCreated?: Promise<void>;
+};
 
 function connect(): Promise<MongoClient> {
   const uri = process.env.MONGODB_URI;
   if (!uri) throw new Error("Thiếu biến môi trường MONGODB_URI");
-  return new MongoClient(uri).connect();
+
+  const client = new MongoClient(uri, {
+    minPoolSize: 5, // Duy trì sẵn 5 kết nối nóng (hot sockets), tránh độ trễ handshake TLS ~200-400ms mỗi request
+    maxPoolSize: 25, // Tối đa 25 kết nối đồng thời cho throughput cao
+    maxIdleTimeMS: 60_000,
+    serverSelectionTimeoutMS: 5_000,
+    connectTimeoutMS: 10_000,
+    socketTimeoutMS: 45_000,
+  });
+
+  return client.connect();
 }
 
 export async function getDb(): Promise<Db> {
   globalForMongo._mongo ??= connect();
   const client = await globalForMongo._mongo;
-  return client.db(process.env.MONGODB_DB ?? "pr_evidence");
+  const db = client.db(process.env.MONGODB_DB ?? "pr_evidence");
+
+  // Tự động khởi tạo index một lần duy nhất dưới background
+  if (!globalForMongo._indexesCreated) {
+    globalForMongo._indexesCreated = ensureIndexes(db).catch(() => {});
+  }
+
+  return db;
 }
 
 export async function pullRequests(): Promise<Collection<PullRequestDoc>> {
@@ -45,15 +65,20 @@ export async function notifications(): Promise<Collection<AppNotificationDoc>> {
   return (await getDb()).collection<AppNotificationDoc>("notifications");
 }
 
-/** MongoDB không cần migration schema. Tạo index một lần. */
-export async function ensureIndexes(): Promise<void> {
-  const prCol = await pullRequests();
-  await prCol.createIndex({ repo: 1, number: -1 });
-  await prCol.createIndex({ updatedAt: -1 });
+/** Tạo compound index tối ưu hóa tốc độ truy vấn tìm kiếm và sắp xếp. */
+export async function ensureIndexes(dbInstance?: Db): Promise<void> {
+  const db = dbInstance ?? (await getDb());
+  const prCol = db.collection<PullRequestDoc>("pull_requests");
+  const repoCol = db.collection<RepositoryDoc>("repositories");
+  const notifCol = db.collection<AppNotificationDoc>("notifications");
 
-  const repoCol = await repositories();
-  await repoCol.createIndex({ lastSyncedAt: -1 });
-
-  const notifCol = await notifications();
-  await notifCol.createIndex({ read: 1, createdAt: -1 });
+  await Promise.all([
+    prCol.createIndex({ updatedAt: -1 }),
+    prCol.createIndex({ repo: 1, updatedAt: -1 }),
+    prCol.createIndex({ repo: 1, number: -1 }),
+    prCol.createIndex({ "claims.id": 1 }),
+    repoCol.createIndex({ lastSyncedAt: -1 }),
+    notifCol.createIndex({ read: 1, createdAt: -1 }),
+  ]);
 }
+

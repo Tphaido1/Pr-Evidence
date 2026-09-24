@@ -77,6 +77,7 @@ export async function savePullRequest(pr: PullRequest): Promise<void> {
 export interface SearchPullRequestsOptions {
   query?: string;
   repo?: string;
+  summaryOnly?: boolean;
 }
 
 /** Tìm kiếm PRs theo từ khóa (tiêu đề, tác giả, repo, số PR, claim) và theo repository */
@@ -107,7 +108,15 @@ export async function searchPullRequests(opts: SearchPullRequestsOptions = {}): 
     filter.$or = conditions;
   }
 
-  const docs = await col.find(filter).sort({ updatedAt: -1 }).toArray();
+  let cursor = col.find(filter).sort({ updatedAt: -1 });
+
+  // Tối ưu hóa: khi chỉ cần tóm tắt hiển thị danh sách, loại bỏ snippet code nặng hàng chục KB
+  if (opts.summaryOnly) {
+    cursor = cursor.project<PullRequestDoc>({ "claims.code.snippet": 0 });
+  }
+
+  const docs = await cursor.toArray();
   return docs.map(fromDoc);
 }
+
 

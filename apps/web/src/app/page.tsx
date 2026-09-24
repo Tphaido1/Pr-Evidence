@@ -19,7 +19,7 @@ export default async function Home({
   const filter = status && validStatus.has(status) ? (status as PullRequestStatus) : undefined;
 
   const [matchingDocs, repoDocs] = await Promise.all([
-    searchPullRequests({ query: q, repo }),
+    searchPullRequests({ query: q, repo, summaryOnly: true }),
     listRepositories(),
   ]);
 

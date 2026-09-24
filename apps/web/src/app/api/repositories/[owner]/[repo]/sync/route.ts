@@ -16,31 +16,37 @@ export async function POST(_req: Request, { params }: { params: Promise<Params> 
   }
 
   const pulls = await fetchGithubPullRequests(fullName, { token });
-  let newPrCount = 0;
 
-  for (const pr of pulls) {
-    const existing = await getPullRequest(pr.id);
-    if (!existing) {
-      newPrCount++;
-      await createNotification({
-        type: "new_pr",
+  const results = await Promise.all(
+    pulls.map(async (pr) => {
+      const existing = await getPullRequest(pr.id);
+      let isNew = false;
+      if (!existing) {
+        isNew = true;
+        await createNotification({
+          type: "new_pr",
+          repo: fullName,
+          prNumber: pr.number,
+          title: pr.title,
+          author: pr.author,
+        });
+      }
+
+      await upsertPullRequestShell({
+        id: pr.id,
         repo: fullName,
-        prNumber: pr.number,
+        number: pr.number,
         title: pr.title,
         author: pr.author,
+        headBranch: pr.headBranch,
+        baseBranch: pr.baseBranch,
       });
-    }
 
-    await upsertPullRequestShell({
-      id: pr.id,
-      repo: fullName,
-      number: pr.number,
-      title: pr.title,
-      author: pr.author,
-      headBranch: pr.headBranch,
-      baseBranch: pr.baseBranch,
-    });
-  }
+      return isNew;
+    }),
+  );
+
+  const newPrCount = results.filter(Boolean).length;
 
   const updatedRepo = {
     id: fullName,

@@ -10,5 +10,5 @@ export {
   searchPullRequests,
 } from "./pull-requests";
 export type { SearchPullRequestsOptions } from "./pull-requests";
-export { listRepositories, getRepository, upsertRepository, deleteRepository } from "./repositories";
+export { listRepositories, getRepository, upsertRepository, deleteRepository, invalidateRepositoriesCache } from "./repositories";
 export { listNotifications, unreadNotificationCount, createNotification, markNotificationAsRead, markAllNotificationsAsRead } from "./notifications";

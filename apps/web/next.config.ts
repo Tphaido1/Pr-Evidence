@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  // Các package trong workspace xuất trực tiếp file .ts nên Next cần biên dịch chúng.
+  compress: true,
+  poweredByHeader: false,
+  reactStrictMode: true,
   transpilePackages: ["@pr-evidence/db", "@pr-evidence/evidence", "@pr-evidence/types"],
   serverExternalPackages: ["mongodb", "aws4"],
   webpack: (config, { isServer }) => {

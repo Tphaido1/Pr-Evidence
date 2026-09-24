@@ -35,8 +35,25 @@ export function NotificationBell() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 15_000); // Polling mỗi 15 giây
-    return () => clearInterval(interval);
+
+    // Chỉ polling khi tab đang hiển thị (active), tránh lãng phí request khi người dùng thu nhỏ/chuyển tab
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    }, 20_000);
+
+    function handleVisibility() {
+      if (document.visibilityState === "visible") {
+        fetchNotifications();
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   useEffect(() => {

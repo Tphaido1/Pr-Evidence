@@ -50,6 +50,8 @@ Next.js (App Router) và TypeScript cho cả giao diện lẫn API. MongoDB (h�
 
 ## Chạy thử
 
+> 📖 **Xem hướng dẫn chi tiết từng bước từ lúc chưa có `node_modules` tại:** [`HUONG_DAN_CHAY_DU_AN.md`](file:///c:/pr-evidence/HUONG_DAN_CHAY_DU_AN.md)
+
 ```bash
 cp .env.example .env
 # Cấu hình MONGODB_URI (dùng MongoDB Atlas hoặc MongoDB local trên cổng 27017)
@@ -62,6 +64,7 @@ pnpm test && pnpm typecheck
 Cần Node 24 (xem `.nvmrc`).
 
 Mặc định không cần đăng nhập. Muốn bật đăng nhập, đặt `REVIEWER_PASSWORD` và `SESSION_SECRET` trong `.env` rồi khởi động lại — xem `docs/decisions/0002-auth.md`.
+
 
 ## Trạng thái
 
